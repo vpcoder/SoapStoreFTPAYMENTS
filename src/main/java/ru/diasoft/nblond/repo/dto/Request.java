@@ -1,12 +1,12 @@
 package ru.diasoft.nblond.repo.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.keyvalue.annotation.KeySpace;
 
 import javax.persistence.*;
 
-@KeySpace("request")
+@AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Entity
@@ -21,8 +21,9 @@ public class Request {
     @Column(name = "method", nullable = false)
     private String method;
 
-    @Column(name = "user_id", nullable = false)
-    private long user;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name="user_id", nullable = false)
+    private User user;
 
     @Column(name = "name", nullable = false)
     private String name;

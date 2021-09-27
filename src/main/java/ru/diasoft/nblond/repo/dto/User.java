@@ -3,11 +3,10 @@ package ru.diasoft.nblond.repo.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.keyvalue.annotation.KeySpace;
 
 import javax.persistence.*;
+import java.util.Set;
 
-@KeySpace("user")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -16,6 +15,7 @@ import javax.persistence.*;
 public class User {
 
     @Id
+    @Column(name = "id", nullable = false)
     private Long id;
 
     @Column(name = "login", nullable = false)
@@ -23,5 +23,8 @@ public class User {
 
     @Column(name = "password", nullable = false)
     private String password;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private Set<Request> requests;
 
 }

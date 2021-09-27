@@ -20,7 +20,7 @@ import ru.diasoft.nblond.repo.services.UserService;
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    private UserService service;
+    private UserService userService;
 
     @Autowired
     private JwtTokenRepository jwtTokenRepository;
@@ -36,24 +36,28 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.cors().and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.NEVER)
+        http.cors()
                 .and()
-                .addFilterAt(new JwtCsrfFilter(jwtTokenRepository, resolver), CsrfFilter.class)
-                .csrf().ignoringAntMatchers("/**")
+                    .sessionManagement()
+                    .sessionCreationPolicy(SessionCreationPolicy.NEVER)
                 .and()
-                .authorizeRequests()
-                .antMatchers("/auth/login")
-                .authenticated()
+                    .addFilterAt(new JwtCsrfFilter(jwtTokenRepository, resolver), CsrfFilter.class)
+                    .csrf().ignoringAntMatchers("/**")
                 .and()
-                .httpBasic()
-                .authenticationEntryPoint(((request, response, e) -> resolver.resolveException(request, response, null, e)));
+                    .authorizeRequests()
+                    .antMatchers("/", "/request").permitAll()
+                    .anyRequest().authenticated()
+                .and()
+                    .formLogin()
+                    .loginPage("/auth/login")
+                    .permitAll()
+                .and()
+                    .httpBasic().authenticationEntryPoint(((request, response, e) -> resolver.resolveException(request, response, null, e)));
     }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(this.service);
+        auth.userDetailsService(this.userService);
     }
 
 }
